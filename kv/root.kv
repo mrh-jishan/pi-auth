@@ -19,25 +19,25 @@ RootWidget:
                 text:"Welcome to biometrics attendance system" 
                 pos:600,600 
                 font_size:40
-            Label:
-                text: "Fingerprint UUID"
-                text_size: self.width, None
-                size_hint: 1, None
-                height: self.texture_size[1]
-            TextInput:
-                multiline:False 
-                pos:600,425
-                readonly: True
-                size:200,45 
-                font_size:20 
-                id:uuid
-                size_hint: (1, None)
+#            Label:
+#                text: "Fingerprint UUID"
+#                text_size: self.width, None
+#                size_hint: 1, None
+#                height: self.texture_size[1]
+#            TextInput:
+#                multiline:False
+#                pos:600,425
+#                readonly: True
+#                size:200,45
+#                font_size:20
+#                id:uuid
+#                size_hint: (1, None)
             Button: 
                 text:"Scan Fingerprint to login"
                 size:100,50 
                 pos:600,250
                 size_hint: (1, None)
-                on_press:app.login(uuid)
+                on_press:app.login()
 #            Button:
 #                text:"Register"
 #                size:100,50

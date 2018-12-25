@@ -1,3 +1,5 @@
+import time
+
 import kivy
 from firebase import firebase
 from kivy.app import App
@@ -27,9 +29,7 @@ class EzsApp(App):
     def enroll(self, name):
         res = pyenroll.EnrollUser().inputFingerprint()
         print(res)
-        if (res['res']):
-            name.text = pyenroll.EnrollUser().getDecryptedText()
-            self.uuid = name.text
+        if res['res'] == False:
             self.changeUI('kv/register.kv')
         else:
             self.open_popup(res['message'])
@@ -45,21 +45,19 @@ class EzsApp(App):
         closeButton.bind(on_press=popup.dismiss)
 
     def registerStudents(self, email, name, role):
-        data = {'name': name, 'uuid': self.uuid, 'role': role, 'email': email}
+        uuid = pyenroll.EnrollUser().save_fingerpring()
+        data = {'name': name, 'uuid': uuid, 'role': role, 'email': email}
         result = self.firebase.post('/users/', data)
         if (result):
-            pyenroll.EnrollUser().save_fingerpring()
             self.open_popup('User added successfully!')
             self.changeUI('kv/home.kv')
 
-    def login(self, uuid):
+    def login(self):
         res = pyenroll.EnrollUser().inputFingerprint()
-        if res['res']:
-            uuid.text = ''
-            self.open_popup('Sorry! User doesn\'t exist in the system')
+        if res['res'] == True:
+            self.changeUI('kv/home.kv')
         else:
-            uuid.text = pyenroll.EnrollUser().getDecryptedText()
-            # self.changeUI('kv/home.kv')
+            self.open_popup('Sorry! We cound\t find the user. Please try again.')
 
     def changeUI(self, file_name):
         Builder.unload_file(file_name)
