@@ -1,0 +1,55 @@
+#:kivy 1.8.0
+
+RootWidget:
+    # import container
+    container: container
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 0
+        spacing: 6
+
+        # bottom-left part:
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [10, 10]
+            spacing: 6
+            
+            Label: 
+                text:"Welcome to biometrics attendance system" 
+                pos:600,600 
+                font_size:40
+            Label:
+                text: "Enter username"
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
+            TextInput:
+                multiline:False 
+                pos:600,425 
+                size:200,45 
+                font_size:20 
+                id:username
+                size_hint: (1, None)
+            Label:
+                text: "Enter password"
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
+            TextInput:
+                multiline:False 
+                pos:600,425 
+                size:200,45 
+                font_size:20 
+                id: password
+                size_hint: (1, None)
+                password: True # hide password
+            Button: 
+                text:"Login" 
+                size:100,50 
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.login(username.text,password.text, 'kv/fingerprint.kv')
+
+            BoxLayout:
+                id: container

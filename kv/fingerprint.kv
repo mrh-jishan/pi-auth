@@ -1,0 +1,46 @@
+#:kivy 1.8.0
+
+RootWidget:
+    # import container
+    container: container
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 0
+        spacing: 6
+
+        # bottom-left part:
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [10, 10]
+            spacing: 6
+
+            Label:
+                text:"Enter your fingerprint"
+                pos:0,0
+                font_size:40
+
+            Label:
+                text: "Enter Full Name"
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
+
+            TextInput:
+                multiline:False
+                pos:600,425
+                size:200,45
+                font_size:20
+                id:name
+                size_hint: (1, None)
+
+
+            Button:
+                text:"Login"
+                size:100,50
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.enroll()
+
+            BoxLayout:
+                id: container
