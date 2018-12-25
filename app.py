@@ -24,15 +24,27 @@ class EzsApp(App):
 
     def build(self):
         self.firebase = firebase.FirebaseApplication('https://attendance-system-51f12.firebaseio.com/', None)
+        self.pyfinger = pyenroll.EnrollUser()
         self.root = Builder.load_file('kv/root.kv')
 
     def enroll(self, name):
-        res = pyenroll.EnrollUser().inputFingerprint()
+        res = self.pyfinger.inputFingerprint()
         print(res)
         if res['res'] == False:
             self.changeUI('kv/register.kv')
         else:
             self.open_popup(res['message'])
+
+    def deletUser(self):
+        res = self.pyfinger.inputFingerprint()
+        if res['res'] == True:
+            print(res)
+            if self.pyfinger.f.deleteTemplate(res['pos']) == True:
+                self.open_popup('User deleted successfully')
+            else:
+                self.open_popup('Something went wrong! Try again')
+        else:
+            self.open_popup('Sorry! User not found')
 
     def open_popup(self, message):
         layout = GridLayout(cols=1, padding=20)
@@ -45,7 +57,7 @@ class EzsApp(App):
         closeButton.bind(on_press=popup.dismiss)
 
     def registerStudents(self, email, name, role):
-        uuid = pyenroll.EnrollUser().save_fingerpring()
+        uuid = self.pyfinger.save_fingerpring()
         data = {'name': name, 'uuid': uuid, 'role': role, 'email': email}
         result = self.firebase.post('/users/', data)
         if (result):
@@ -53,11 +65,24 @@ class EzsApp(App):
             self.changeUI('kv/home.kv')
 
     def login(self):
-        res = pyenroll.EnrollUser().inputFingerprint()
+        data = self.firebase.get('/users/', '')
+        res = self.pyfinger.inputFingerprint()
+        isAdmin = False
+
+
+        print(res)
+        print(data)
+
         if res['res'] == True:
-            self.changeUI('kv/home.kv')
+            for k in data:
+                if data[k]['role'] == 'admin' and res['pos'] == data[k]['uuid']:
+                    isAdmin = True
+            if isAdmin:
+                self.changeUI('kv/home.kv')
+            else:
+                self.open_popup('Sorry! you are not admin')
         else:
-            self.open_popup('Sorry! We cound\t find the user. Please try again.')
+            self.open_popup('Sorry! We cound\'t find the user. Please try again.')
 
     def changeUI(self, file_name):
         Builder.unload_file(file_name)

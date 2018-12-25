@@ -33,7 +33,7 @@ class EnrollUser(object):
         self.f.convertImage(0x01)
         result = self.f.searchTemplate()
         positionNumber = result[0]
-        print(positionNumber)
+        print('postion number---------------->', positionNumber)
         if positionNumber == -1:
             return dict({'res': False, 'message': 'Something Went Wrong, Please try again!'})
         else:
