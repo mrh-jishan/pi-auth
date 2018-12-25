@@ -7,83 +7,122 @@ Copyright (C) 2015 Bastian Raschke <bastian.raschke@posteo.de>
 All rights reserved.
 
 """
-
+import hashlib
 import time
 
 import fingerprint
 
 
-## Enrolls new finger
-##
-
 class EnrollUser(object):
 
     def __init__(self):
-        pass
-
-    ## Tries to initialize the sensor
-    def enrollMe(self):
         try:
-            f = fingerprint.pyfingerprint.PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
-
-            if (f.verifyPassword() == False):
+            self.f = fingerprint.pyfingerprint.PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
+            if (self.f.verifyPassword() == False):
                 raise ValueError('The given fingerprint sensor password is wrong!')
-
         except Exception as e:
             print('The fingerprint sensor could not be initialized!')
             print('Exception message: ' + str(e))
             exit(1)
+        print('Currently used templates: ' + str(self.f.getTemplateCount()) + '/' + str(self.f.getStorageCapacity()))
 
-        ## Gets some sensor information
-        print('Currently used templates: ' + str(f.getTemplateCount()) + '/' + str(f.getStorageCapacity()))
+    def inputFingerprint(self):
+        while (self.f.readImage() == False):
+            pass
+        self.f.convertImage(0x01)
+        result = self.f.searchTemplate()
+        positionNumber = result[0]
+        if (positionNumber >= 0):
+            print('Template already exists at position #' + str(positionNumber))
+            return dict({'res': False, 'message': 'Template already exists at position #' + str(positionNumber)})
+        else:
+            return dict({'res': True, 'message': 'Please enter the same finger again'})
 
-        ## Tries to enroll new finger
-        try:
-            print('Waiting for finger...')
+    def getDecryptedText(self):
+        ## Downloads the characteristics of template loaded in charbuffer 1
+        characterics = str(self.f.downloadCharacteristics(0x01)).encode('utf-8')
+        hx = hashlib.sha256(characterics).hexdigest()
+        ## Hashes characteristics of template
+        print('SHA-2 hash of template: ' + hx)
+        return hx
 
-            ## Wait that finger is read
-            while (f.readImage() == False):
-                pass
+        pass
 
-            ## Converts read image to characteristics and stores it in charbuffer 1
-            f.convertImage(0x01)
+    def input_finger_first_time(self):
+        print('Waiting for finger...')
+        while (self.f.readImage() == False):
+            pass
+        self.f.convertImage(0x01)
+        result = self.f.searchTemplate()
+        positionNumber = result[0]
+        if (positionNumber >= 0):
+            print('Template already exists at position #' + str(positionNumber))
+            return dict({'res': False, 'message': 'Template already exists at position #' + str(positionNumber)})
+        else:
+            return dict({'res': True, 'message': 'Please enter the same finger again'})
 
-            ## Checks if finger is already enrolled
-            result = f.searchTemplate()
-            positionNumber = result[0]
+    def input_finger_second_time(self):
+        print('Remove finger...')
+        time.sleep(2)
+        print('Waiting for same finger again...')
+        ## Wait that finger is read again
+        while (self.f.readImage() == False):
+            pass
+        ## Converts read image to characteristics and stores it in charbuffer 2
+        self.f.convertImage(0x02)
+        ## Compares the charbuffers
+        if (self.f.compareCharacteristics() == 0):
+            return False
 
-            if (positionNumber >= 0):
-                print('Template already exists at position #' + str(positionNumber))
-                exit(0)
+    def save_fingerpring(self):
+        ## Creates a template
+        self.f.createTemplate()
+        ## Saves template at new position number
+        positionNumber = self.f.storeTemplate()
+        print('Finger enrolled successfully!')
+        print('New template position #' + str(positionNumber))
 
-            print('Remove finger...')
-            time.sleep(2)
-
-            print('Waiting for same finger again...')
-
-            ## Wait that finger is read again
-            while (f.readImage() == False):
-                pass
-
-            ## Converts read image to characteristics and stores it in charbuffer 2
-            f.convertImage(0x02)
-
-            ## Compares the charbuffers
-            if (f.compareCharacteristics() == 0):
-                raise Exception('Fingers do not match')
-
-            ## Creates a template
-            f.createTemplate()
-
-            ## Saves template at new position number
-            positionNumber = f.storeTemplate()
-            print('Finger enrolled successfully!')
-            print('New template position #' + str(positionNumber))
-
-        except Exception as e:
-            print('Operation failed!')
-            print('Exception message: ' + str(e))
-            exit(1)
+    # def enrollMe(self):
+    #     try:
+    #         print('Waiting for finger...')
+    #         while (self.f.readImage() == False):
+    #             pass
+    #         self.f.convertImage(0x01)
+    #         result = self.f.searchTemplate()
+    #         positionNumber = result[0]
+    #         if (positionNumber >= 0):
+    #             print('Template already exists at position #' + str(positionNumber))
+    #             exit(0)
+    #
+    #         print('Remove finger...')
+    #         time.sleep(2)
+    #
+    #         print('Waiting for same finger again...')
+    #
+    #         ## Wait that finger is read again
+    #         while (self.f.readImage() == False):
+    #             pass
+    #
+    #         ## Converts read image to characteristics and stores it in charbuffer 2
+    #         self.f.convertImage(0x02)
+    #
+    #         ## Compares the charbuffers
+    #         if (self.f.compareCharacteristics() == 0):
+    #             raise Exception('Fingers do not match')
+    #
+    #         ## Creates a template
+    #         self.f.createTemplate()
+    #
+    #         ## Saves template at new position number
+    #         positionNumber = self.f.storeTemplate()
+    #         print('Finger enrolled successfully!')
+    #         print('New template position #' + str(positionNumber))
+    #
+    #     except Exception as e:
+    #         print('Operation failed!')
+    #         print('Exception message: ' + str(e))
+    #         exit(1)
 
     if __name__ == '__main__':
-        enrollMe()
+        pass
+        # enrollMe()

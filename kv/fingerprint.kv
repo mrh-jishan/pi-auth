@@ -32,15 +32,24 @@ RootWidget:
                 size:200,45
                 font_size:20
                 id:name
+                readonly:True
                 size_hint: (1, None)
 
 
             Button:
-                text:"Login"
+                text:"Scan Fingerprint"
                 size:100,50
                 pos:600,250
                 size_hint: (1, None)
-                on_press:app.enroll()
+                on_press:app.enroll(name)
+
+            Button:
+                text:"GO BACK"
+                size:100,50
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.changeUI('kv/root.kv')
+
 
             BoxLayout:
                 id: container
