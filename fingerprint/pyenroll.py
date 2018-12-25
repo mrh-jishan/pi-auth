@@ -26,6 +26,17 @@ class EnrollUser(object):
             exit(1)
         print('Currently used templates: ' + str(self.f.getTemplateCount()) + '/' + str(self.f.getStorageCapacity()))
 
+    # def userLogin(self):
+    #     while (self.f.readImage() == False):
+    #         pass
+    #     self.f.convertImage(0x01)
+    #     result = self.f.searchTemplate()
+    #     positionNumber = result[0]
+    #     if (positionNumber >= 0):
+    #         return dict({'res': False, 'message': 'Template already exists at position #' + str(positionNumber)})
+    #     else:
+    #         return dict({'res': True, 'message': 'Sorry! You are not registered into the system!'})
+
     def inputFingerprint(self):
         while (self.f.readImage() == False):
             pass
@@ -36,6 +47,7 @@ class EnrollUser(object):
             print('Template already exists at position #' + str(positionNumber))
             return dict({'res': False, 'message': 'Template already exists at position #' + str(positionNumber)})
         else:
+            print('Template doesnt exists at position')
             return dict({'res': True, 'message': 'Please enter the same finger again'})
 
     def getDecryptedText(self):
@@ -75,9 +87,7 @@ class EnrollUser(object):
             return False
 
     def save_fingerpring(self):
-        ## Creates a template
         self.f.createTemplate()
-        ## Saves template at new position number
         positionNumber = self.f.storeTemplate()
         print('Finger enrolled successfully!')
         print('New template position #' + str(positionNumber))

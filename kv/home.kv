@@ -1,0 +1,36 @@
+#:kivy 1.8.0
+
+RootWidget:
+    # import container
+    container: container
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 0
+        spacing: 6
+
+        # bottom-left part:
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [10, 10]
+            spacing: 6
+            
+            Label: 
+                text:"Welcome to home"
+                pos:600,600 
+                font_size:40
+            Button: 
+                text:"Register New User"
+                size:100,50 
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.changeUI('kv/fingerprint.kv')
+
+            Button:
+                text:"Logout"
+                size:100,50
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.changeUI('kv/root.kv')
+            BoxLayout:
+                id: container

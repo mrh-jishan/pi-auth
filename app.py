@@ -1,4 +1,5 @@
 import kivy
+from firebase import firebase
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -20,33 +21,18 @@ class RootWidget(BoxLayout):
 class EzsApp(App):
 
     def build(self):
+        self.firebase = firebase.FirebaseApplication('https://attendance-system-51f12.firebaseio.com/', None)
         self.root = Builder.load_file('kv/root.kv')
 
     def enroll(self, name):
-        self.changeUI('kv/register.kv')
-        # res = pyenroll.EnrollUser().inputFingerprint()
-        # print(res)
-        # if (res['res']):
-        #     name.text = pyenroll.EnrollUser().getDecryptedText()
-        #     self.changeUI('kv/register.kv')
-        # else:
-        #     self.open_popup(res['message'])
-
-    # name.text = 'rpbon'
-    # print(name)
-    # print(self.ids.name.text)
-    # self.ids.name = 'robin'
-    # try:
-    #     if (pyenroll.EnrollUser().input_finger_first_time()['res'] == True):
-    #         if (pyenroll.EnrollUser().input_finger_second_time()['res'] == True):
-    #             pyenroll.EnrollUser().save_fingerpring()
-    #         else:
-    #             self.open_popup('fingerpring dint match')
-    #     else:
-    #         self.open_popup('Something went wrong')
-    # except Exception as e:
-    #     print('Operation failed!')
-    #     print('Exception message: ' + str(e))
+        res = pyenroll.EnrollUser().inputFingerprint()
+        print(res)
+        if (res['res']):
+            name.text = pyenroll.EnrollUser().getDecryptedText()
+            self.uuid = name.text
+            self.changeUI('kv/register.kv')
+        else:
+            self.open_popup(res['message'])
 
     def open_popup(self, message):
         layout = GridLayout(cols=1, padding=20)
@@ -59,20 +45,27 @@ class EzsApp(App):
         closeButton.bind(on_press=popup.dismiss)
 
     def registerStudents(self, email, name, role):
-        print(role)
-        # self.changeUI(file_name)
+        data = {'name': name, 'uuid': self.uuid, 'role': role, 'email': email}
+        result = self.firebase.post('/users/', data)
+        if (result):
+            pyenroll.EnrollUser().save_fingerpring()
+            self.open_popup('User added successfully!')
+            self.changeUI('kv/home.kv')
 
-    def login(self, username, password, file_name):
-        self.changeUI(file_name)
+    def login(self, uuid):
+        res = pyenroll.EnrollUser().inputFingerprint()
+        if res['res']:
+            uuid.text = ''
+            self.open_popup('Sorry! User doesn\'t exist in the system')
+        else:
+            uuid.text = pyenroll.EnrollUser().getDecryptedText()
+            # self.changeUI('kv/home.kv')
 
     def changeUI(self, file_name):
         Builder.unload_file(file_name)
         self.root.clear_widgets()
         screen = Builder.load_file(file_name)
         self.root.add_widget(screen)
-
-    def next_screen(self, screen):
-        pyenroll.EnrollUser().enrollMe()
 
 
 if __name__ == '__main__':
