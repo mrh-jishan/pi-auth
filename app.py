@@ -18,6 +18,8 @@ class EzsApp(App):
         self.root = Builder.load_file('kv/root.kv')
 
     def enroll(self):
+
+        # pass
         pyenroll.EnrollUser().enrollMe()
 
     def login(self, username, password, file_name):

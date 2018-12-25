@@ -10,7 +10,7 @@ All rights reserved.
 
 import time
 
-import pyfingerprint
+import fingerprint
 
 
 ## Enrolls new finger
@@ -24,7 +24,7 @@ class EnrollUser(object):
     ## Tries to initialize the sensor
     def enrollMe(self):
         try:
-            f = pyfingerprint.PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
+            f = fingerprint.pyfingerprint.PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
 
             if (f.verifyPassword() == False):
                 raise ValueError('The given fingerprint sensor password is wrong!')
