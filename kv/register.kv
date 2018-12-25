@@ -21,6 +21,36 @@ RootWidget:
                 font_size:40
 
             Label:
+                text: "User Type"
+                text_size: self.width, None
+                size_hint: 1, None
+                height: self.texture_size[1]
+            BoxLayout:
+                rows: 1
+
+                size:200,45
+                size_hint: 1, None
+                ToggleButton:
+                    text:'Students'
+                    id: role
+                    on_press: role.text = 'students'
+                    size_hint: 1, None
+                    group: 'role'
+                    pos:600,425
+                    size:200,45
+
+
+                ToggleButton:
+                    text:'Lecturer'
+                    pos:600,425
+                    id: role
+                    on_press: role.text = 'lecturer'
+                    size:200,45
+                    size_hint: 1, None
+                    group: 'role'
+                    state: 'down'
+
+            Label:
                 text: "Enter Full Name"
                 text_size: self.width, None
                 size_hint: 1, None
@@ -35,7 +65,7 @@ RootWidget:
                 size_hint: (1, None)
 
             Label:
-                text: "Enter username"
+                text: "Enter email"
                 text_size: self.width, None
                 size_hint: 1, None
                 height: self.texture_size[1]
@@ -44,27 +74,21 @@ RootWidget:
                 pos:600,425
                 size:200,45
                 font_size:20
-                id:username
+                id:email
                 size_hint: (1, None)
-            Label:
-                text: "Enter password"
-                text_size: self.width, None
-                size_hint: 1, None
-                height: self.texture_size[1]
-            TextInput:
-                multiline:False
-                pos:600,425
-                size:200,45
-                font_size:20
-                id: password
+
+            Button:
+                text:"Register"
+                size:100,50
+                pos:600,250
                 size_hint: (1, None)
-                password: True # hide password
-#            Button:
-#                text:"Login"
-#                size:100,50
-#                pos:600,250
-#                size_hint: (1, None)
-#                on_press:app.login(username.text,password.text)
+                on_press:app.registerStudents(email.text,name.text, role.text)
+            Button:
+                text:"Go Back"
+                size:100,50
+                pos:600,250
+                size_hint: (1, None)
+                on_press:app.changeUI('kv/root.kv')
 
             BoxLayout:
                 id: container

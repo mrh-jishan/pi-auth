@@ -23,12 +23,14 @@ class EzsApp(App):
         self.root = Builder.load_file('kv/root.kv')
 
     def enroll(self, name):
-        res = pyenroll.EnrollUser().inputFingerprint()
-        print(res)
-        if (res['res']):
-            name.text = pyenroll.EnrollUser().getDecryptedText()
-        else:
-            self.open_popup(res['message'])
+        self.changeUI('kv/register.kv')
+        # res = pyenroll.EnrollUser().inputFingerprint()
+        # print(res)
+        # if (res['res']):
+        #     name.text = pyenroll.EnrollUser().getDecryptedText()
+        #     self.changeUI('kv/register.kv')
+        # else:
+        #     self.open_popup(res['message'])
 
     # name.text = 'rpbon'
     # print(name)
@@ -56,12 +58,12 @@ class EzsApp(App):
         popup.open()
         closeButton.bind(on_press=popup.dismiss)
 
-    def register(self, file_name):
-        self.changeUI(file_name)
+    def registerStudents(self, email, name, role):
+        print(role)
+        # self.changeUI(file_name)
 
     def login(self, username, password, file_name):
         self.changeUI(file_name)
-
 
     def changeUI(self, file_name):
         Builder.unload_file(file_name)
